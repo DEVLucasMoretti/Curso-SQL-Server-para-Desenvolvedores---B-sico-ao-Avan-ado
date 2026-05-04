@@ -76,3 +76,19 @@ ADD CONSTRAINT Ck_Cliente_Idade CHECK (Idade > 16)
 ALTER TABLE Tb_Cliente
 ADD CONSTRAINT DF_Cliente_DataCriacao DEFAULT(GETDATE()) FOR DataCriacao
 
+
+
+CREATE TABLE TB_CLIENTE
+(
+	Id INT IDENTITY(1,1),
+	Nome VARCHAR(70),
+	CPF VARCHAR(11),
+	DataNascimento DATETIME2,
+	Email VARCHAR(70),
+
+	CONSTRAINT PK_CLIENTE PRIMARY KEY (Id)
+)
+INSERT INTO TB_CLIENTE
+(Id ,Nome, CPF, DataNascimento,Email)
+VALUES
+('Rodolfo Neves', '22342424','1980-07-21','Rodolfo.Nevves2@gmail.com')
