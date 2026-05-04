@@ -89,6 +89,28 @@ CREATE TABLE TB_CLIENTE
 	CONSTRAINT PK_CLIENTE PRIMARY KEY (Id)
 )
 INSERT INTO TB_CLIENTE
-(Id ,Nome, CPF, DataNascimento,Email)
+(Nome, CPF, DataNascimento,Email)
 VALUES
 ('Rodolfo Neves', '22342424','1980-07-21','Rodolfo.Nevves2@gmail.com')
+
+INSERT INTO TB_CLIENTE
+VALUES
+('Clever Neves', '22342424','1900-05-23','Clever.Nevves2@gmail.com'),
+('Nerson Neves', '22342424','1982-03-25','Nerson.Nevves2@gmail.com'),
+('Nerson Neves', '22342424','1982-03-25','Nerson.Nevves2@gmail.com')
+
+SELECT * FROM TB_CLIENTE
+
+SELECT TOP 2 * FROM TB_CLIENTE
+
+SELECT DISTINCT Nome, * FROM TB_CLIENTE
+
+
+
+-- BEGIN TRAN    COMMIT   ROLLBACK
+
+BEGIN TRAN
+UPDATE TB_CLIENTE SET CPF = '12345678910'
+ROLLBACK
+
+SELECT * FROM TB_CLIENTE
