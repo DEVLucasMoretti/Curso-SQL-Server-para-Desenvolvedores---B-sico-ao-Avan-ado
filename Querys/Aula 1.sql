@@ -163,6 +163,3 @@ Relacionado às transações de dados:
 - COMMIT.
 - ROLLBACK.
 */
-
-
-
