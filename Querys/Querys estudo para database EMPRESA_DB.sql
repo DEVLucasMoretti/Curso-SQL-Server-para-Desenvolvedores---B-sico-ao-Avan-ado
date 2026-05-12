@@ -183,3 +183,17 @@ FROM
     GROUP BY C2.NomeCompleto
     ORDER BY Total DESC
 ) AS C1
+
+--ESTRUTURA  CASE
+SELECT   NumeroPedido,
+		 SUM(Preco) AS TOTAL_VENDAS,
+		 CASE
+			 WHEN SUM(Preco) >=50
+				 THEN 'META ATINGIDA'
+			 WHEN SUM(Preco) >=20 AND SUM(Preco) <=50
+				 THEN 'ACEITÁVEL'
+			 ELSE
+			     'NÃO ATINGIDA'
+		 END AS STATUS_VENDA
+  FROM   TB_DETALHE_PEDIDO
+GROUP BY NumeroPedido
