@@ -197,3 +197,30 @@ SELECT   NumeroPedido,
 		 END AS STATUS_VENDA
   FROM   TB_DETALHE_PEDIDO
 GROUP BY NumeroPedido
+
+PRINT CONCAT('A','B','C')
+PRINT CONCAT('   A','B','C')
+PRINT CONCAT('TESTE','  TESTE')
+PRINT CONCAT('TESTE',LTRIM('  TESTE'))   -- Tira o espaço a Esquerda da STRING
+PRINT CONCAT(RTRIM('TESTE   '),('TESTE'))-- Tira o espaço a Direita  da STRING
+
+PRINT TRIM ('    TESTE    ')+'T' -- Tira o espaço da Direita e Esquerda de uma STRING
+
+
+PRINT LEFT('TESTE,',3) --Retorna os 3 carcteres partindo da esquerda
+PRINT RIGHT('TESTE',3) --Retorna os 3 carcteres partindo da direita
+
+PRINT SUBSTRING('TESTES',1,3)
+PRINT SUBSTRING('TESTES',3,2)  --usada para "fatiar" um pedaço da String dando a posição incial e quantos caracteres a direita vai pegar.
+
+PRINT LEN('TESTE')  --Retorna a quantidade de Caracteres da String
+PRINT UPPER('uppper deixa tudo em caixa alta, ou seja, letra maiúscula')
+PRINT LOWER('LOWER deixa tudo em caixa BAIXA, ou seja, letra MINÚSCULA')
+
+PRINT REPLICATE('Q',50)--replica a x vezes a quantidade da string colocada
+
+PRINT CONCAT(REPLICATE('0',6), 0.44)
+
+PRINT REPLACE('TESTE','T','M') -- troca as letra por outra
+
+PRINT REVERSE('TESTE')  --escreve ao contrário
