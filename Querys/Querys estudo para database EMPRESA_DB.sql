@@ -305,3 +305,76 @@ PRINT(CONVERT(DECIMAL(10,2),123.1231123))
 PRINT POWER(2,3) --potencia de um número
 
 
+
+--EXEMPLOS AVANÇADOS 1
+SELECT  C2.NomeCompleto,
+        C2.Cargo,
+        C2.ANO_MES,
+        C2.SOMATORIA_QUANTIDADE,
+        C2.SOMATORIA_PRECO,
+        C2.VALOR_TOTAL,
+
+        CASE
+            WHEN C2.VALOR_TOTAL >= 5000
+                THEN 'BATEU A META'
+            ELSE
+                'NÃO BATEU A META'
+        END AS [STATUS]
+
+FROM
+    (SELECT CLI.NomeCompleto,
+            CLI.Cargo,
+            C1.ANO_MES,
+            C1.SOMATORIA_QUANTIDADE,
+            C1.SOMATORIA_PRECO,
+            C1.VALOR_TOTAL
+			FROM
+	(SELECT P.ClienteId,
+        SUBSTRING(CONVERT(VARCHAR, P.DataPedido, 120), 1, 7) AS ANO_MES,
+        SUM(D.Quantidade) SOMATORIA_QUANTIDADE,
+        SUM(D.Preco) SOMATORIA_PRECO,
+        SUM(D.Quantidade) * SUM(D.Preco) VALOR_TOTAL
+    FROM TB_DETALHE_PEDIDO D
+    JOIN TB_PEDIDO P ON D.NumeroPedido = P.NumeroPedido
+GROUP BY P.ClienteId,
+         SUBSTRING(CONVERT(VARCHAR, P.DataPedido, 120), 1, 7)) AS C1
+JOIN TB_CLIENTE CLI ON C1.ClienteId = CLI.ClienteId) AS C2
+
+--EXEMPLOS AVANÇADOS 2
+
+SELECT  C1.CATEGORIA,
+        C1.ANO,
+        CONVERT(DECIMAL(15,2), C1.FATURAMENTO) AS FATURAMENTO,
+        (C1.FATURAMENTO/C2.FATURAMENTO) * 100 [PERCENTUAL (%)]
+
+FROM
+    (SELECT CA.Descricao CATEGORIA,
+            YEAR(PE.DataPedido) AS ANO,
+            SUM(DE.Quantidade * DE.Preco) AS FATURAMENTO
+        FROM TB_DETALHE_PEDIDO DE
+        JOIN TB_PRODUTO PR
+            ON DE.ProdutoId = PR.ProdutoId
+        JOIN TB_CATEGORIA CA
+            ON CA.CategoriaId = PR.CategoriaId
+        JOIN TB_PEDIDO PE
+            ON PE.NumeroPedido = DE.NumeroPedido
+        WHERE YEAR(PE.DataPedido) = 1996
+        GROUP BY CA.Descricao, YEAR(PE.DataPedido)) AS C1
+
+INNER JOIN
+
+    (SELECT YEAR(PE.DataPedido) AS ANO,
+            SUM(DE.Quantidade * DE.Preco) AS FATURAMENTO
+        FROM TB_DETALHE_PEDIDO DE
+        JOIN TB_PRODUTO PR
+            ON DE.ProdutoId = PR.ProdutoId
+        JOIN TB_CATEGORIA CA
+            ON CA.CategoriaId = PR.CategoriaId
+        JOIN TB_PEDIDO PE
+            ON PE.NumeroPedido = DE.NumeroPedido
+        WHERE YEAR(PE.DataPedido) = 1996
+        GROUP BY YEAR(PE.DataPedido)) C2
+
+ON C1.ANO = C2.ANO
+
+ORDER BY C1.FATURAMENTO DESC
