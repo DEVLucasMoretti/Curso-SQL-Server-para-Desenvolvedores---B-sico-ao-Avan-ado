@@ -378,3 +378,39 @@ INNER JOIN
 ON C1.ANO = C2.ANO
 
 ORDER BY C1.FATURAMENTO DESC
+
+
+
+--INDICES
+
+Índices
+
+--• UNIQUE: Não será permitida a duplicidade do campo chave do índice.
+--• CLUSTERED: Indica que as linhas da tabela estarão fisicamenteordenadas pelo campo que é a chave do índice.
+--• NONCLUSTERED: Indica que o índice não interfere na ordenação das linhas da tabela (default).
+--• <nome_tabela_ou_view>: Nome da tabela ou view para a qual o índice será criado.
+--• <nome_coluna>: É a coluna da tabela que será a chave do índice.
+--• ASC: Esta palavra determina a ordenação ascendente (padrão).
+--• DESC: Esta palavra determina a ordenação descendente.
+
+CREATE TABLE dbo.TesteIndex
+(
+	CPF VARCHAR(11) NOT NULL,
+	Nome VARCHAR(10) NULL,
+	RG VARCHAR(10) NULL
+);
+
+CREATE UNIQUE CLUSTERED INDEX IX_CPF
+ON dbo.TesteIndex (CPF)
+
+CREATE  NONCLUSTERED INDEX IX_RG
+ON dbo.TesteIndex (RG DESC)
+
+--Como apagar
+DROP INDEX dbo.TesteIndex.IX_RG
+
+CREATE  NONCLUSTERED INDEX IX_RG_Nome
+ON dbo.TesteIndex (RG,Nome)
+
+EXEC sp_helpindex TesteIndex
+
