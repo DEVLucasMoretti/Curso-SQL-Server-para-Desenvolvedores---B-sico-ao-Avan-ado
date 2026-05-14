@@ -414,3 +414,80 @@ ON dbo.TesteIndex (RG,Nome)
 
 EXEC sp_helpindex TesteIndex
 
+
+
+--VIEW
+--nome_view: Nome da view.
+--colunas: Nomes das colunas da view.
+--WITH ENCRYPTION: Protege o código fonte da view, impedindo que ele seja aberto a partir do Object Explorer.
+--WITH SCHEMABINDING: Cria uma view ligada às estruturas das tabelas às quais ela faz referência. As tabelas que participam da view não poderão ter suas estruturas alteradas enquanto a view não for alterada de forma compatível.
+--instrucao_select: Comando SELECT que será gravado na view.
+--WITH CHECK OPTION: Impede a inclusão e a alteração de dados através da view que sejam incompatíveis com a cláusula WHERE da instrução SELECT.
+/*
+CREATE VIEW nome_view [colunas]
+[WITHENCRYPTION] [SCHEMABINDING]
+AS instrucao_select
+[WITH CHECK OPTION]
+*/
+
+
+CREATE TABLE TB_TESTE
+(
+    Nome VARCHAR(50) NULL,
+    Telefone VARCHAR(30) NULL
+);
+
+INSERT INTO TB_TESTE
+    (Nome)
+VALUES
+    ('José'),('Maria'),('João')
+
+
+CREATE VIEW VIE_TESTE
+WITH ENCRYPTION
+AS
+SELECT  Nome,
+        Telefone
+    FROM
+        TB_TESTE
+WHERE Telefone IS NULL
+
+SELECT * FROM VIE_TESTE
+
+INSERT INTO VIE_TESTE
+    (Nome, Telefone)
+VALUES
+    ('Marcos','1123232312')
+
+
+
+ALTER VIEW VIE_TESTE
+WITH ENCRYPTION
+AS
+SELECT  Nome,
+        Telefone
+    FROM
+        TB_TESTE
+WHERE Telefone IS NULL
+WITH CHECK OPTION -- nao permite que inserimos dados que nao atendem o WHERE
+
+
+INSERT INTO VIE_TESTE
+    (Nome, Telefone)
+VALUES
+    ('Jacquim','1123232312')
+
+SELECT * FROM VIE_TESTE
+
+
+--WITH ENCRYPTION   não permite pegar o CREATE DESSA TABELA, quando a gente pede para o SQLSERVER Montar o CREATE da tabela por exemplo, ocultando a criação da View
+CREATE VIEW VIE_PED1 WITH ENCRYPTION   --
+AS
+
+SELECT P.NumeroPedido, P.DataPedido, F.NomeCompleto
+    FROM TB_PEDIDO P
+JOIN TB_FUNCIONARIO F
+    ON P.FuncionarioId = F.FuncionarioId
+
+SELECT * FROM VIE_PED1
+WHERE NomeCompleto = 'Michael Suyama'
