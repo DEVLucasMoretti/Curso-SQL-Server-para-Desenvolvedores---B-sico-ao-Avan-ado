@@ -491,3 +491,112 @@ JOIN TB_FUNCIONARIO F
 
 SELECT * FROM VIE_PED1
 WHERE NomeCompleto = 'Michael Suyama'
+
+
+
+
+/*
+O comando IIF retorna um dos dois argumentos passados, dependendo do valor
+obtido em uma expressão booleana.
+
+IIF(<expressao_booleana>, <valor_positivo>, <valor_negativo>)
+*/
+
+PRINT IIF(2=2,'VERDADE','MENTIRA')
+SELECT NomeCompleto, IIF(Salario >= 5000,'Padrão','Fora do Padrão')FROM TB_FUNCIONARIO
+/*
+O comando CHOOSE age com um índice em uma lista de valores. O argumento índice
+determina qual dos valores seguintes será retornado.
+
+CHOOSE(<indice>, <valor_1>, <valor_2> [, <valor_n>] )
+*/
+SELECT CHOOSE(3,'PRIMEIRO','SEGUNDO','TERCEIRO','QUARTO','QUINTO')
+
+/*
+Em uma consulta (SELECT), os operadores LAG e LEAD permitem recuperar um campo
+de N linhas anteriores à atual (LAG) ou posteriores à atual (LEAD).
+
+LAG( coluna, offset[, default])
+LEAD( coluna, offset[, default])
+*/
+SELECT  NomeCompleto,
+        Salario,
+        LAG(Salario,1,0) OVER(ORDER BY NomeCompleto) SALARIO_ANTERIOR,
+        LEAD(Salario,1,0) OVER(ORDER BY NomeCompleto) PROXIMO_SALARIO
+FROM TB_FUNCIONARIO
+
+SELECT  NomeCompleto,
+        Salario
+FROM TB_FUNCIONARIO
+ORDER BY NomeCompleto
+
+/*
+Utilizando as cláusulas FETCH e OFFSET, é possível dividir os resultados
+em várias páginas numeradas. Com este novo recurso, podemos selecionar N linhas
+(FETCH) a partir de qualquer posição da tabela. A cláusula ORDER BY é necessária
+para a utilização das cláusulas FETCH e OFFSET.
+*/
+
+SELECT * FROM TB_PEDIDO
+ORDER BY NumeroPedido
+
+SELECT * FROM TB_PEDIDO
+ORDER BY NumeroPedido
+OFFSET 20 ROWS FETCH NEXT 20 ROWS ONLY
+
+
+
+
+
+---MERGE
+
+CREATE TABLE dbo.TB_FUNCIONARIO_TEMP
+(
+    FuncionarioId int NOT NULL PRIMARY KEY,
+    NomeCompleto varchar(70) NOT NULL,
+    Cargo varchar(50) NOT NULL,
+    DataNascimento datetime2(7) NOT NULL,
+    Salario money NOT NULL,
+);
+
+INSERT INTO dbo.TB_FUNCIONARIO_TEMP
+(FuncionarioId, NomeCompleto, Cargo, DataNascimento, Salario)
+SELECT FuncionarioId, NomeCompleto, Cargo, DataNascimento, Salario
+FROM TB_FUNCIONARIO;
+
+DELETE dbo.TB_FUNCIONARIO_TEMP
+WHERE FuncionarioId IN (1,2,3);
+
+UPDATE dbo.TB_FUNCIONARIO_TEMP
+SET Salario = 500
+WHERE FuncionarioId IN (9,8,7);
+
+SELECT * FROM TB_FUNCIONARIO_TEMP;
+
+SELECT * FROM TB_FUNCIONARIO;
+
+--SET IDENTITY_INSERT dbo.TB_FUNCIONARIO_TEMP ON;
+
+MERGE dbo.TB_FUNCIONARIO_TEMP AS ALVO
+USING TB_FUNCIONARIO AS ORIGEM
+ON ALVO.FuncionarioId = ORIGEM.FuncionarioId
+
+WHEN MATCHED
+AND ALVO.Salario <> ORIGEM.Salario
+WHEN MATCHED
+    THEN UPDATE
+    SET ALVO.Salario = ORIGEM.Salario
+
+WHEN NOT MATCHED
+    THEN
+        INSERT (FuncionarioId, NomeCompleto, Cargo, DataNascimento, Salario)
+        VALUES (FuncionarioId, NomeCompleto, Cargo, DataNascimento, Salario);
+
+--SET IDENTITY_INSERT dbo.TB_FUNCIONARIO_TEMP OFF;
+
+
+
+
+
+
+--
