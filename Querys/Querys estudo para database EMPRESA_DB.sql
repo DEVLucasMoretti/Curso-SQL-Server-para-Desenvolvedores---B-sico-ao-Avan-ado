@@ -636,3 +636,45 @@ PIVOT (
     FOR P.MES IN ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12])
 ) AS PVT
 ORDER BY 1
+
+
+--TABELA TEMPORÀRIA
+/*
+AS TABELAS TEMPORÁRIAS QUANDO CRIADAS SÃO SALVAS NO BANCO DE DADOS DE SISTEMA TempDB e podem ser de dois tipo:
+
+- Locais
+- Globais
+
+Locais:
+
+    São criadas com o prefixo "#" antes do nome da tabela,
+    são visíveis apenas na conexão responsável por sua criação.
+
+Globais:
+
+    São criadas com dois prefixo "##" antes do nome da tabela,
+    são visíveis por todas conexões.
+*/
+
+--TABELA Temporária Local: sÓ EXISTE NESSA CONEXÃO, SE	 abrie outra aba (CTRL+N), e rodar o select, ela ja não existe
+CREATE TABLE ##TB_TEMP
+(
+	Nome VARCHAR(50) NULL
+);
+
+INSERT #TB_TEMP VALUES('Roberto Jorge')
+
+SELECT * FROM #TB_TEMP
+
+
+
+--TABELA Temporária Global: EXISTE Em TODAS CONEXÃO, SE	 abrie outra aba (CTRL+N), e rodar o select, ela existe
+--OBS: Tabela temporária vai exister enquanto o SQL estiver aberto(SSMS)
+CREATE TABLE ##TB_TEMP2
+(
+	Nome VARCHAR(50) NULL
+);
+
+INSERT ##TB_TEMP2 VALUES('Marcos Jorge')
+
+SELECT * FROM ##TB_TEMP2
