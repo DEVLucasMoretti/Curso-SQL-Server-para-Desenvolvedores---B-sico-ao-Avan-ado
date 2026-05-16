@@ -678,3 +678,169 @@ CREATE TABLE ##TB_TEMP2
 INSERT ##TB_TEMP2 VALUES('Marcos Jorge')
 
 SELECT * FROM ##TB_TEMP2
+
+
+--VARIAVEIS
+
+DECLARE @NUM1 INT = 10, @NUM2 INT = 20, @RESULT INT
+
+SET @RESULT = @NUM1 + @NUM2
+--TANTO SELECT QUANTO SET a gente usa para atribuir valores de variáveis ou valores a uma variável
+
+PRINT @RESULT
+--PRINT @NUM1 + @NUM2
+
+
+
+--Operadores logicos 
+--ALL
+--Retorna TRUE se todo um conjunto de comparações for TRUE.
+
+--AND
+--Retorna TRUE se duas expressões forem TRUE.
+
+--ANY
+--Retorna TRUE se qualquer comparação de um conjunto de comparações for TRUE.
+
+--BETWEEN
+--Retorna TRUE se o operando estiver dentro de uma determinada faixa de valores.
+
+--EXISTS
+--Retorna TRUE se uma subquery possuir quaisquer linhas.
+
+--IN
+--Retorna TRUE se um operando for igual a um dentro de uma lista de expressões.
+
+--LIKE
+--Retorna TRUE se um operando atender a uma condição.
+
+--NOT
+--Reverte o valor de qualquer outro operador booleano.
+
+--OR
+--Retorna TRUE se uma das expressões booleanas for TRUE.
+
+--SOME
+--Retorna TRUE se alguma comparação de um conjunto de comparações for TRUE.
+
+--CONTOLE DE FLUXO
+----> IF/ELSE
+
+-- EXEMPLO 01
+DECLARE @A INT = 10, @B INT = 15;
+
+IF @A > @B
+    BEGIN
+        PRINT @A;
+        PRINT 'É MAIOR QUE';
+        PRINT @B;
+    END
+
+PRINT 'CONTINUAÇÃO DO CÓDIGO'
+
+-- EXEMPLO 02
+SET @A = 15;
+SET @B = 10;
+
+IF @A > @B
+    BEGIN
+        PRINT @A;
+        PRINT 'É MAIOR QUE';
+        PRINT @B;
+    END
+
+PRINT 'CONTINUAÇÃO DO CÓDIGO'
+
+-- EXEMPLO 03
+DECLARE @A INT = 15, @B INT = 10;
+
+IF @A > @B
+    BEGIN
+        PRINT @A;
+        PRINT 'É MAIOR QUE';
+        PRINT @B;
+    END
+ELSE
+    BEGIN
+        PRINT @A;
+        PRINT 'NÃO É MAIOR QUE';
+        PRINT @B;
+    END
+
+PRINT 'CONTINUAÇÃO DO CÓDIGO'
+
+
+--- COMANDO PARA VERIFICAR SE UMA TABELA EXISTE OU NÂO E CRIAR ou deletar
+--se não tiver a tabela cria,    --Se tiver a tabela é não nulo / Se não tiver a tabela é null
+--assim que valida
+IF OBJECT_ID('TB_TEST','U') IS  NULL
+BEGIN
+CREATE TABLE TB_TEST (ID INT)
+END
+--se ~tiver a tabela vai excluir, ou seja o valor não é null, ou seja, existe a tabela
+IF OBJECT_ID('TB_TEST','U') IS NOT  NULL
+BEGIN
+DROP TABLE TB_TEST
+END
+
+
+--LAÇO DE REPETIÇÃO
+--WHILE
+--EXEMPLO 1 WHILE
+DECLARE @NUM INT = 10;
+
+WHILE(@NUM >= 0)
+BEGIN
+
+    IF @NUM = 5
+    BEGIN
+        PRINT 'IGUAL A 5, CONTINUE'
+        SET @NUM -= 1;
+        CONTINUE
+        PRINT 'NÃO EXECUTA CÓDIGO'
+    END
+
+    PRINT @NUM;
+
+    SET @NUM -= 1;
+
+    IF @NUM = 2
+    BEGIN
+        PRINT 'IGUAL A 2, BREAK'
+        BREAK
+    END
+
+END
+
+--EXEMPLO 2 WHILE
+DECLARE @T INT = 1, @N INT;
+
+WHILE @T <= 10
+BEGIN
+    PRINT 'TABUADA DO ' + CAST(@T AS VARCHAR(2));
+    PRINT '';
+
+    SET @N = 1;
+
+    WHILE @N <= 10
+    BEGIN
+        PRINT CAST(@T AS VARCHAR(2)) + ' x ' + CAST(@N AS VARCHAR(2)) + ' = ' + CAST(@T*@N AS VARCHAR(3));
+        SET @N += 1;
+    END
+
+    SET @T += 1;
+    PRINT ''
+END
+
+--EXEMPLO 3 WHILE
+DECLARE @DEZENA INT, @CONT INT = 1;
+
+WHILE @CONT <= 6
+BEGIN
+    SET @DEZENA = 1 + 60 * RAND();
+    PRINT @DEZENA;
+
+    SET @CONT += 1;
+END
+
+PRINT 'BOA SORTE';
