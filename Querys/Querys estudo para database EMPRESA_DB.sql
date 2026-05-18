@@ -898,3 +898,147 @@ INNER JOIN
     GROUP BY ClienteId
 ) AS C2
 ON C1.ClienteId = C2.ClienteId
+
+
+--PROCEDURE
+
+CREATE PROCEDURE BuscarEnderecoPorEntidade @ENTIDADE AS VARCHAR(30)
+AS
+BEGIN
+    IF @ENTIDADE = 'CLIENTE'
+        SELECT Logradouro, Cidade, CEP, Pais 
+        FROM TB_ENDERECO 
+        WHERE ClienteId IS NOT NULL
+
+    ELSE IF @ENTIDADE = 'FUNCIONARIO'
+        SELECT Logradouro, Cidade, CEP, Pais 
+        FROM TB_ENDERECO 
+        WHERE FuncionarioId IS NOT NULL
+
+    ELSE IF @ENTIDADE = 'FORNECEDOR'
+        SELECT Logradouro, Cidade, CEP, Pais 
+        FROM TB_ENDERECO 
+        WHERE FornecedorId IS NOT NULL
+
+    ELSE
+        SELECT 'OPÇÃO INVÁLIDA SELECIONE ALGUMA DESSA OPÇÕES: CLIENTE, FUNCIONARIO OU FORNECEDOR'
+END
+
+EXEC BuscarEnderecoPorEntidade @ENTIDADE = 'FORNECEDOR'
+
+
+
+
+
+
+CREATE PROCEDURE CalcularIdade @IDADE AS INT OUTPUT, 
+                                @DATA_NASCIMENTO AS DATETIME2
+AS
+BEGIN
+    SET @IDADE = DATEDIFF(YEAR, @DATA_NASCIMENTO, GETDATE())
+END
+
+DECLARE @IDADE_OUT AS INT = 0;
+
+PRINT 'IDADE ANTES: ' + CAST(@IDADE_OUT AS VARCHAR(2))
+
+EXEC CalcularIdade @IDADE_OUT OUTPUT, 
+                   @DATA_NASCIMENTO = '1988-06-06';
+
+PRINT 'IDADE DEPOIS: ' + CAST(@IDADE_OUT AS VARCHAR(2))
+
+
+
+
+
+
+--EXERCÍCIOS PROCEDURE
+
+--TOTAL VENDIDO EM CADA UM DOS MESES FILTRADO POR UM DETERMINADO ANO
+
+CREATE PROCEDURE STP_TOTAL_VENDIDO @ANO INT
+AS BEGIN
+
+SELECT MONTH(P.DataPedido) AS MES,
+       YEAR(P.DataPedido) AS ANO,
+       SUM(D.Preco) AS TOTAL_VENDIDO
+FROM TB_PEDIDO P
+JOIN TB_DETALHE_PEDIDO D
+    ON P.NumeroPedido = D.NumeroPedido
+WHERE YEAR(P.DataPedido) = @ANO
+GROUP BY MONTH(P.DataPedido), YEAR(P.DataPedido)
+ORDER BY 1
+
+END
+
+EXEC STP_TOTAL_VENDIDO 1996
+
+
+
+
+
+--Outro exercício
+
+CREATE PROC STP_ITENS_PEDIDO
+    @DT1 DATETIME2,
+    @DT2 DATETIME2,
+    @CLIENTE VARCHAR(50) = '%',
+    @FUNCIONARIO VARCHAR(50) = '%'
+
+AS BEGIN
+
+    SELECT  P.NumeroPedido,
+            P.DataPedido,
+            D.Preco,
+            D.Desconto,
+            P.Frete,
+            C.NomeCompleto CLIENTE,
+            F.NomeCompleto FUNCIONARIO
+    FROM TB_PEDIDO P
+    JOIN TB_DETALHE_PEDIDO D
+        ON P.NumeroPedido = D.NumeroPedido
+    JOIN TB_CLIENTE C
+        ON P.ClienteId = C.ClienteId
+    JOIN TB_FUNCIONARIO F
+        ON F.FuncionarioId = P.FuncionarioId
+    WHERE P.DataPedido BETWEEN @DT1 AND @DT2 AND
+          C.NomeCompleto LIKE @CLIENTE AND
+          F.NomeCompleto LIKE @FUNCIONARIO
+
+END
+
+EXEC STP_ITENS_PEDIDO '1997-01-01', '1997-12-31'
+
+
+
+
+
+
+/*
+Por meio do comando RETURN, é possível fazer com que a procedure retorne um
+valor, que deve ser um número inteiro, no seu próprio nome.
+
+O retorno de valor com RETURN é utilizado normalmente para sinalizar algum tipo
+de erro na execução ou para indicar que a procedure não conseguiu executar o que
+foi solicitado.
+*/
+
+CREATE PROCEDURE STP_ULT_DATA_PEDIDO @CLIENTE_ID VARCHAR(10)
+AS BEGIN
+
+    IF NOT EXISTS(SELECT * FROM TB_PEDIDO WHERE ClienteId = @CLIENTE_ID)
+        RETURN -1;
+
+    SELECT MAX(DataPedido) AS ULT_DATA_PEDIDO
+    FROM TB_PEDIDO
+    WHERE ClienteId = @CLIENTE_ID;
+
+END
+
+DECLARE @RESULTADO INT;
+
+EXEC @RESULTADO = STP_ULT_DATA_PEDIDO 'ASDFASDF';
+
+IF(@RESULTADO < 0) PRINT 'NÃO EXISTE PEDIDO PARA ESTE CLIENTE'
+
+SELECT * FROM TB_PEDIDO
