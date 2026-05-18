@@ -844,3 +844,57 @@ BEGIN
 END
 
 PRINT 'BOA SORTE';
+
+
+--FUNÇÕES
+
+-- CRIAR FUNÇÃO QUE RETORNA O FATURAMENTO POR NÚMERO PEDIDO
+
+CREATE FUNCTION FaturamentoDetalhePedido (@NUMERO_PEDIDO AS INT)
+RETURNS FLOAT
+AS
+BEGIN
+    DECLARE @FATURAMENTO FLOAT;
+
+    SELECT @FATURAMENTO = SUM(Quantidade * Preco) 
+    FROM TB_DETALHE_PEDIDO
+    WHERE NumeroPedido = @NUMERO_PEDIDO
+
+    RETURN @FATURAMENTO;
+END
+
+SELECT NumeroPedido, 
+       dbo.FaturamentoDetalhePedido(NumeroPedido) AS FATURAMENTO 
+FROM TB_PEDIDO
+
+
+
+
+
+
+
+CREATE FUNCTION ListarPedidosCliente(@CLIENTE_ID AS VARCHAR(15))
+RETURNS TABLE
+AS
+RETURN SELECT * 
+FROM TB_PEDIDO 
+WHERE ClienteId = @CLIENTE_ID;
+
+SELECT DISTINCT C1.ClienteId,
+       C1.TOTAL_PEDIDOS,
+       C2.TOTAL_FATURAMENTO
+FROM
+(
+    SELECT ClienteId,
+           (SELECT COUNT(*) 
+            FROM dbo.ListarPedidosCliente(ClienteId)) AS TOTAL_PEDIDOS
+    FROM TB_PEDIDO
+) AS C1
+INNER JOIN
+(
+    SELECT ClienteId,
+           SUM(dbo.FaturamentoDetalhePedido(NumeroPedido)) AS TOTAL_FATURAMENTO
+    FROM TB_PEDIDO
+    GROUP BY ClienteId
+) AS C2
+ON C1.ClienteId = C2.ClienteId
